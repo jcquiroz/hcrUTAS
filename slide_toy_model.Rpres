@@ -1,0 +1,47 @@
+Management strategies for Patagonian Toothfish
+========================================================
+author: Chapter 3 -- Paper I
+date: May, 2015
+width: 1440
+height: 900
+transition: concave
+font-import: http://fonts.googleapis.com/css?family=lato
+font-family: 'lato'
+
+
+
+Chilean Case
+========================================================
+```{r setup, include=FALSE}
+opts_chunk$set(cache=TRUE)
+```
+For more details on authoring R presentations click the
+**Help** button on the toolbar.
+
+- Bullet 1
+- Bullet 2
+- Bullet 3
+
+First Results
+========================================================
+Comparison between Stock Assessment Model (**SAM**) and Operating Model (**MSE**):
+
+```{r plots, echo=FALSE, fig.keep='first', fig.align='center', fig.width=30, fig.height=20}
+source('om_plots.R')
+```
+
+First Results
+========================================================
+Comparison between Stock Assessment Model (**SAM**) and Operating Model (**MSE**):
+
+```{r plots2, echo=FALSE, fig.keep='first', fig.align='center'}
+print(fig_mse)
+```
+
+
+Slide With Plot
+========================================================
+
+```{r, echo=FALSE}
+plot(cars)
+```

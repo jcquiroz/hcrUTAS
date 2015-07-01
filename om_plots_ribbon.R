@@ -2,15 +2,18 @@ library(ggplot2)
 library(dplyr)
 library(reshape)
 
-#setwd("/home/jcquiroz/Documents/patagonian_toothfish_utas/toy_model/DelayDiff")
-
 rm(list = ls())
+
 source("read.admb.R")
+scen.dir       <- '/dataOM_017'
+
+root.path      <- getwd()
+work.path      <- paste0(root.path, scen.dir, sep='')
+
+setwd(work.path)
+
 A <- read.admb("DDmod")
-
-
-def.path <- paste(getwd(),'/saveRuns',sep='')
-list.jcq <- list.files(path = def.path, pattern = "jcq")
+list.jcq <- list.files(pattern = "jcq")
 
 
 ## -------------- Porner una descripcion --------------
@@ -21,33 +24,33 @@ for(k in 1:length(ref))
 {
   tmp.ref = as.data.frame(t(read.table(list.jcq[ref[k]], header = FALSE)))
   tmp.ref[ tmp.ref==0 ] <- NA
-  x.range = c(A$year[1]:(A$year[1]+dim(tmp.ref)[1]-1)) 
+  x.range = c(A$year[1]:(A$year[1]+dim(tmp.ref)[1]-1))
   if (k<=1) {tmp.ref =  tmp.ref/1000}
-  
+
   matplot(x.range, tmp.ref, type='n', axes=TRUE, ann=TRUE, xlab = 'Year', ylab=list.jcq[ref[k]])
-  matlines(x.range, tmp.ref, type='l', lty = "solid", col = "grey")  
+  matlines(x.range, tmp.ref, type='l', lty = "solid", col = "grey")
   lines(x.range, t(apply(tmp.ref,1,quantile,c(0.05, 0.95),na.rm='TRUE'))[,2], col='red', lty = "dashed")
   lines(x.range, t(apply(tmp.ref,1,quantile,c(0.05, 0.95),na.rm='TRUE'))[,1], col='red', lty = "dashed")
   lines(x.range, apply(tmp.ref,1,median,na.rm='TRUE'), col = "black")
   abline(v = 2010, col = "red", lty = 3)
-  
-  h <- data.frame(yr = x.range, level = apply(tmp.ref,1,median,na.rm='TRUE'), 
+
+  h <- data.frame(yr = x.range, level = apply(tmp.ref,1,median,na.rm='TRUE'),
                   th = t(apply(tmp.ref,1,quantile,c(0.4, 0.6),na.rm='TRUE')),
                   th = t(apply(tmp.ref,1,quantile,c(0.25, 0.75),na.rm='TRUE')),
                   th = t(apply(tmp.ref,1,quantile,c(0.05, 0.95),na.rm='TRUE')))
-  h <- h 
-  
+  h <- h
+
   h1 <- ggplot(h, aes(x = yr))
   h1 <- h1 + geom_ribbon(aes(ymin=th.40., ymax=th.60.), color='red', alpha=0.3, fill='red')
   h1 <- h1 + geom_ribbon(aes(ymin=th.60., ymax=th.75.), color='blue', alpha=0.3, fill='blue')
-  h1 <- h1 + geom_ribbon(aes(ymin=th.25., ymax=th.40.), color='blue', alpha=0.3, fill='blue')  
+  h1 <- h1 + geom_ribbon(aes(ymin=th.25., ymax=th.40.), color='blue', alpha=0.3, fill='blue')
   h1 <- h1 + geom_ribbon(aes(ymin=th.75., ymax=th.95.), color='yellow', alpha=0.3, fill='yellow')
   h1 <- h1 + geom_ribbon(aes(ymin=th.5., ymax=th.25.), color='yellow', alpha=0.3, fill='yellow')
   h1 <- h1 + geom_line(aes(y=level), color='black', size=1)
   h1 <- h1 + theme_bw(15) + geom_vline(xintercept = 2010, colour="red", linetype = "longdash")
   h1 <- h1 + labs(x='Year', y=list.jcq[ref[k]])
-  print(h1) 
-  
+  print(h1)
+
 }
 
 ## -------------- Porner una descripcion --------------
@@ -59,32 +62,32 @@ for(k in 1:length(mse))
   tmp.mse = as.data.frame(t(read.table(list.jcq[mse[k]], header = FALSE)))
   tmp.mse[ tmp.mse==0 ] <- NA
   x.range = c(A$year[1]:(A$year[1]+dim(tmp.mse)[1]-1))
-  
+
   if (k<=3) {tmp.mse = tmp.mse/1000}
-  
+
   matplot(x.range, tmp.mse, type='n', axes=TRUE, ann=TRUE, xlab = 'Year', ylab=list.jcq[mse[k]])
-  matlines(x.range, tmp.mse, type='l', lty = "solid", col = "grey")  
+  matlines(x.range, tmp.mse, type='l', lty = "solid", col = "grey")
   lines(x.range, t(apply(tmp.mse,1,quantile,c(0.05, 0.95),na.rm='TRUE'))[,2], col='red', lty = "dashed")
   lines(x.range, t(apply(tmp.mse,1,quantile,c(0.05, 0.95),na.rm='TRUE'))[,1], col='red', lty = "dashed")
   lines(x.range, apply(tmp.mse,1,median,na.rm='TRUE'), col = "black")
   abline(v = 2010, col = "red", lty = 3)
-  
-  h <- data.frame(yr = x.range, level = apply(tmp.mse,1,median,na.rm='TRUE'), 
+
+  h <- data.frame(yr = x.range, level = apply(tmp.mse,1,median,na.rm='TRUE'),
                   th = t(apply(tmp.mse,1,quantile,c(0.4, 0.6),na.rm='TRUE')),
                   th = t(apply(tmp.mse,1,quantile,c(0.25, 0.75),na.rm='TRUE')),
                   th = t(apply(tmp.mse,1,quantile,c(0.05, 0.95),na.rm='TRUE')))
-  h <- h 
-  
+  h <- h
+
   h1 <- ggplot(h, aes(x = yr))
   h1 <- h1 + geom_ribbon(aes(ymin=th.40., ymax=th.60.), color='red', alpha=0.3, fill='red')
   h1 <- h1 + geom_ribbon(aes(ymin=th.60., ymax=th.75.), color='blue', alpha=0.3, fill='blue')
-  h1 <- h1 + geom_ribbon(aes(ymin=th.25., ymax=th.40.), color='blue', alpha=0.3, fill='blue')  
+  h1 <- h1 + geom_ribbon(aes(ymin=th.25., ymax=th.40.), color='blue', alpha=0.3, fill='blue')
   h1 <- h1 + geom_ribbon(aes(ymin=th.75., ymax=th.95.), color='yellow', alpha=0.3, fill='yellow')
   h1 <- h1 + geom_ribbon(aes(ymin=th.5., ymax=th.25.), color='yellow', alpha=0.3, fill='yellow')
   h1 <- h1 + geom_line(aes(y=level), color='black', size=1)
   h1 <- h1 + theme_bw(15) + geom_vline(xintercept = 2010, colour="red", linetype = "longdash")
   h1 <- h1 + labs(x='Year', y=list.jcq[mse[k]])
-  print(h1) 
+  print(h1)
 
 }
 
@@ -107,14 +110,14 @@ x.range = c(A$year[1]:(A$year[1]+dim(tmp.mse)[1]-2))
 par(mfcol=c(2, 1), mar=c(4,4,0.5,0.5), oma=c(1.5,1,1,1))
 
 matplot(x.range, t(tmp.bt.sam), type='n', axes=TRUE, ann=TRUE, xlab = 'Year', ylab=list.jcq[mse[k]])
-matlines(x.range, t(tmp.bt.sam), type='l', lty = "solid", col = "grey")  
+matlines(x.range, t(tmp.bt.sam), type='l', lty = "solid", col = "grey")
 lines(x.range, t(apply(t(tmp.bt.sam),1,quantile,c(0.05, 0.95),na.rm='TRUE'))[,2], col='red', lty = "dashed")
 lines(x.range, t(apply(t(tmp.bt.sam),1,quantile,c(0.05, 0.95),na.rm='TRUE'))[,1], col='red', lty = "dashed")
 lines(x.range, apply(t(tmp.bt.sam),1,median,na.rm='TRUE'), col = "black")
 abline(v = 2010, col = "red", lty = 3)
 
 matplot(x.range, t(tmp.bt.ope), type='n', axes=TRUE, ann=TRUE, xlab = 'Year', ylab=list.jcq[mse[k]])
-matlines(x.range, t(tmp.bt.ope), type='l', lty = "solid", col = "grey")  
+matlines(x.range, t(tmp.bt.ope), type='l', lty = "solid", col = "grey")
 lines(x.range, t(apply(t(tmp.bt.ope),1,quantile,c(0.05, 0.95),na.rm='TRUE'))[,2], col='red', lty = "dashed")
 lines(x.range, t(apply(t(tmp.bt.ope),1,quantile,c(0.05, 0.95),na.rm='TRUE'))[,1], col='red', lty = "dashed")
 lines(x.range, apply(t(tmp.bt.ope),1,median,na.rm='TRUE'), col = "black")
@@ -130,7 +133,7 @@ abline(h = 0, v = which(x.range==2010), col = c("black","red"), lty = c(1,3))
 
 
 # ## -------------- Porner una descripcion --------------
-# 
+#
 # rnnd = grep("rnd",list.jcq)
 # par(mfcol=c(2, 1), mar=c(4,4,0.5,0.5), oma=c(1.5,1,1,1))
 # for(k in 1:length(rnnd))
@@ -143,12 +146,12 @@ abline(h = 0, v = which(x.range==2010), col = c("black","red"), lty = c(1,3))
 #   abline(v = 2010, col = "red", lty = 3)
 #   abline(h = 0, col = "red", lty = 3)
 #   boxplot(t(tmp.rnnd), names=x.range, outline = FALSE,
-#           ylab=list.jcq[rnnd[k]], xlab='year')  
+#           ylab=list.jcq[rnnd[k]], xlab='year')
 #   abline(v = which(x.range==2010), col = "red", lty = 3)
 #   abline(h = 0, col = "red", lty = 3)
 # }
 
-
+setwd(root.path)
 
 
 
